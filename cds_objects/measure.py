@@ -5,6 +5,7 @@ import classes.globals as g
 from cds_objects.change import MeasureChange
 from cds_objects.measure_component import MeasureComponent
 from cds_objects.measure_condition import MeasureCondition
+from cds_objects.measure_condition_component import MeasureConditionComponent
 from cds_objects.measure_excluded_geographical_area import MeasureExcludedGeographicalArea
 from cds_objects.footnote_association_measure import FootnoteAssociationMeasure
 
@@ -20,6 +21,7 @@ class Measure(Master):
         self.descriptions = []
         self.duty_expression_array = []
         self.measure_condition_array = []
+        self.mcs = []
         self.get_data()
 
     def get_data(self):
@@ -35,6 +37,9 @@ class Measure(Master):
         self.additional_code_type_id = Master.process_null(self.elem.find("additionalCode/additionalCodeType/additionalCodeTypeId"))
         self.additional_code = self.additional_code_type_id + self.additional_code_code
 
+        if self.measure_sid == -1011445882:
+            a = 1
+
         self.get_geographical_area_description()
         self.get_measure_type_description()
         self.get_measure_components()
@@ -44,7 +49,34 @@ class Measure(Master):
         self.get_regulation_group_id()
 
         change = MeasureChange(self.measure_sid, self.goods_nomenclature_item_id, "Measure", self.operation)
+
+        if self.additional_code != "":
+            if self.additional_code[0:2] == "X3":
+                if self.additional_code == "X333":
+                    a = 1
+                obj = {
+                    "conditions": []
+                }
+                if len(self.mcs) > g.max_condition_count:
+                    g.max_condition_count = len(self.mcs)
+                    g.max_add_code = self.additional_code
+
+                for mc in self.mcs:
+                    c = {
+                        "condition_sequence_number": int(mc.condition_sequence_number),
+                        "duty_amount": mc.condition_duty_amount,
+                        "condition_measurement_unit_code": mc.condition_measurement_unit_code,
+                        "condition_measurement_unit_qualifier_code": mc.condition_measurement_unit_qualifier_code,
+                        "action_code": mc.action_code,
+                        "positive": True if mc.action_code != "06" else False,
+                        "component_string": mc.measure_condition_component_string_excel
+                    }
+                    obj["conditions"].append(c)
+
+                g.code_master_list[self.additional_code] = obj
+                a = 1
         g.change_list.append(change)
+        a = 1
 
     def get_regulation_group_id(self):
         if self.measure_generating_regulation_id in g.base_regulation_dict:
@@ -114,8 +146,15 @@ class Measure(Master):
         self.measure_condition_string = ""
 
         if measure_conditions:
+            mcs = []
             for measure_condition in measure_conditions:
-                measure_condition_string = MeasureCondition(measure_condition).output
+                mc = MeasureCondition(measure_condition, self.measure_sid, self.additional_code)
+                mcs.append(mc)
+
+            self.mcs = sorted(mcs, key=lambda x: x.condition_sequence_number, reverse=False)
+
+            for mc in self.mcs:
+                measure_condition_string = mc.output
                 if measure_condition_string != "":
                     self.measure_condition_string += measure_condition_string
         self.measure_condition_string_excel = self.measure_condition_string.replace("<br />", "\n")

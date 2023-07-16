@@ -256,9 +256,9 @@ class XmlFile(object):
                 row_count += 1
                 measure_objects.append(Measure(measure, worksheet, row_count))
 
-            measure_objects = sorted(measure_objects, key=lambda x: x.measure_type_id, reverse=False)
-            measure_objects = sorted(measure_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
-            measure_objects = sorted(measure_objects, key=lambda x: x.operation_text, reverse=False)
+            # measure_objects = sorted(measure_objects, key=lambda x: x.measure_type_id, reverse=False)
+            # measure_objects = sorted(measure_objects, key=lambda x: x.goods_nomenclature_item_id, reverse=False)
+            # measure_objects = sorted(measure_objects, key=lambda x: x.operation_text, reverse=False)
 
             row_count = 0
             for measure in measure_objects:
@@ -268,6 +268,56 @@ class XmlFile(object):
 
             range = 'A1:P' + str(row_count)
             worksheet.autofilter(range)
+
+            if 1 > 2:
+                f = open("mi/duty_list.txt", "w+")
+                for item in g.duty_list:
+                    f.write(item)
+                    f.write("\n")
+                f.close()
+
+                f = open("mi/conditional_duty_list.txt", "w+")
+                tmp = []
+                for item in g.conditional_duty_list:
+                    if "ASV / X" in item:
+                        item = "ASVX : " + item
+                    elif "ASV" in item:
+                        item = "ASV  : " + item
+                    elif "LPA" in item:
+                        item = "LPA  : " + item
+                    tmp.append(item)
+
+                tmp.sort()
+                for item in tmp:
+                    f.write(item)
+                    f.write("\n")
+                f.close()
+
+                f = open("mi/all_codes.json", "w+")
+                json.dump(g.code_master_list, f, indent=4)
+                f.close()
+                print(str(g.max_condition_count), g.max_add_code)
+
+                self.master_list_to_csv()
+
+    def master_list_to_csv(self):
+        COMMA = ","
+        f = open("mi/all_codes.csv", "w+")
+        for code in g.code_master_list:
+            f.write(code + COMMA)
+            condition_count = len(g.code_master_list[code]["conditions"])
+            for mc in g.code_master_list[code]["conditions"]:
+                f.write(mc["duty_amount"] + COMMA)
+                f.write(mc["condition_measurement_unit_code"] + COMMA)
+                f.write(mc["component_string"] + COMMA)
+                f.write(str(mc["positive"]).lower() + COMMA)
+            if condition_count < 3:
+                for i in range(0, 3 - condition_count):
+                    for j in range(0, 4):
+                        f.write("n/a" + COMMA)
+                a = 1
+            f.write("\n")
+        f.close()
 
     def get_commodities(self):
         row_count = 0

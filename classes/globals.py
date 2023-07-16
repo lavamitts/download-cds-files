@@ -30,3 +30,9 @@ print("Getting reference data - complete")
 change_list = []
 code_lists = []
 definition_list = {}
+
+duty_list = []
+conditional_duty_list = []
+code_master_list = {}
+max_condition_count = 0
+max_add_code = ""
