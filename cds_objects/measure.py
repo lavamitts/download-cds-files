@@ -151,7 +151,13 @@ class Measure(Master):
                 mc = MeasureCondition(measure_condition, self.measure_sid, self.additional_code)
                 mcs.append(mc)
 
-            self.mcs = sorted(mcs, key=lambda x: x.condition_sequence_number, reverse=False)
+            if len(mcs) > 0:
+                try:
+                    self.mcs = sorted(mcs, key=lambda x: x.condition_sequence_number, reverse=False)
+                except Exception as e:
+                    a = 1
+            else:
+                self.mcs = []
 
             for mc in self.mcs:
                 measure_condition_string = mc.output

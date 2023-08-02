@@ -13,6 +13,7 @@ class MeasureCondition(Master):
         self.additional_code = additional_code
         self.measure_condition_component_array = []
         self.condition_duty_string = ""
+        self.condition_sequence_number = None
         self.get_data()
 
     def get_data(self):
