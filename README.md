@@ -37,7 +37,7 @@
 
 ### Install packages
 
-- Install necessary Python modules via `pip3 install -r requirements.txt`
+- Install necessary Python modules via `pip install -r requirements.txt`
 
 ## Usage
 
