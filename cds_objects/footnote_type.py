@@ -1,4 +1,3 @@
-import xml.etree.ElementTree as ET
 from classes.master import Master
 import classes.globals as g
 
