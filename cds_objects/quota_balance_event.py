@@ -1,7 +1,4 @@
-import sys
 from classes.master import Master
-from cds_objects.additional_code_description import AdditionalCodeDescription
-import classes.globals as g
 
 
 class QuotaBalanceEvent(Master):
