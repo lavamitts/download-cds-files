@@ -5,6 +5,8 @@ import classes.globals as g
 from classes.sendgrid_mailer import SendgridMailer
 
 import classes.functions as func
+from cds_objects.measure_type import MeasureType
+from cds_objects.measurement_unit import MeasurementUnit
 from cds_objects.footnote_type import FootnoteType
 from cds_objects.footnote import Footnote
 from cds_objects.additional_code import AdditionalCode
@@ -36,6 +38,8 @@ class XmlFile(object):
         self.get_results_info()
         self.parse_filename()
 
+        self.get_measure_types()
+        self.get_measurement_units()
         self.get_footnote_types()
         self.get_footnotes()
         self.get_additional_codes()
@@ -79,7 +83,6 @@ class XmlFile(object):
         self.json_filename = os.path.join(self.json_path, self.json_filename)
 
         my_dict = {}
-        changes = []
         consolidated_commodities = []
         measures = []
         commodities = []
@@ -133,6 +136,48 @@ class XmlFile(object):
             for footnote_type in footnote_types:
                 row_count += 1
                 FootnoteType(footnote_type, worksheet, row_count)
+
+    def get_measurement_units(self):
+        row_count = 0
+        measurement_units = self.root.find('.//findMeasurementUnitByDatesResponse')
+        if measurement_units:
+            # Write Excel column headers
+            worksheet = g.excel.workbook.add_worksheet("Measurement units")
+            data = ('Action', 'Measurement unit code',
+                    'Start date', 'End date', 'Description')
+            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.set_column(0, 3, 30)
+            worksheet.set_column(4, 4, 50)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            measurement_units = measurement_units.findall("MeasurementUnit")
+            for measurement_unit in measurement_units:
+                row_count += 1
+                MeasurementUnit(measurement_unit, worksheet, row_count)
+
+    def get_measure_types(self):
+        row_count = 0
+        measure_types = self.root.find('.//findMeasureTypeByDatesResponse')
+        if measure_types:
+            # Write Excel column headers
+            worksheet = g.excel.workbook.add_worksheet("Measure types")
+            data = ('Action', 'Measure type ID',
+                    'Start date', 'End date', 'Description',
+                    'Trade movement code', 'Origin dest code', 'Measure component applicable code',
+                    'Order number capture code', 'Measure explosion level', 'Priority code'
+                    )
+            worksheet.write_row('A1', data, g.excel.format_bold)
+            worksheet.set_column(0, 0, 30)
+            worksheet.set_column(1, 10, 20)
+            worksheet.set_column(4, 4, 50)
+            worksheet.freeze_panes(1, 0)
+
+            # Get data
+            measure_types = measure_types.findall("MeasureType")
+            for measure_type in measure_types:
+                row_count += 1
+                MeasureType(measure_type, worksheet, row_count)
 
     def get_footnotes(self):
         row_count = 0
@@ -315,7 +360,7 @@ class XmlFile(object):
                 for i in range(0, 3 - condition_count):
                     for j in range(0, 4):
                         f.write("n/a" + COMMA)
-                a = 1
+
             f.write("\n")
         f.close()
 
