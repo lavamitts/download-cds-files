@@ -1,24 +1,25 @@
 import os
+import logging
 
 
 class Master(object):
     def __init__(self, elem):
+        # Get the operation type
         try:
             self.operation = elem.find("metainfo/opType").text
         except Exception as e:
             self.operation = ""
+            logging.warning('No operation found', e.args)
+
+        # Get the national versus EU
         try:
             self.national = 1 if elem.find(
                 "metainfo/origin").text == "N" else 0
         except Exception as e:
             self.national = 0
+            logging.warning('No origin node found', e.args)
 
         self.expand_operation()
-
-        # self.hjid = elem.find("hjid").text
-        # self.operation_date = "2021-01-01"
-        # self.status = elem.find("metainfo/status").text
-        # self.transactionDate = elem.find("metainfo/transactionDate").text
 
     def expand_operation(self):
         if self.operation == "C":
