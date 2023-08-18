@@ -2,7 +2,6 @@ import os
 import json
 import xml.etree.ElementTree as ET
 import classes.globals as g
-from classes.sendgrid_mailer import SendgridMailer
 
 import classes.functions as func
 from cds_objects.measure_type import MeasureType
@@ -55,26 +54,8 @@ class XmlFile(object):
 
         self.write_changes()
 
-        self.mail_extract()
-
     def check_for_document_codes(self):
         pass
-
-    def mail_extract(self):
-        return
-        edition = self.execution_date.split("T")[0]
-        html_content = """
-        <p>Dear all,</p>
-        <p>Please find attached the latest CDS updates in Excel format for {edition}.</p>
-        <p>This data was loaded to the Online Tariff by 06:30 on {edition}.</p>
-        <p>If you have any queries with the content of this file,
-        please contact us on <a href="mailto:trade-tariff-support@transformuk.com">trade-tariff-support@transformuk.com</a></p>
-        <p>Thank you,</p>
-        <p>The Online Tariff Team.</p>""".format(edition=edition)
-
-        subject = "CDS data load " + edition
-        s = SendgridMailer(subject, html_content, [g.excel.excel_filename])
-        s.send()
 
     def write_changes(self):
         self.json_path = self.path.replace("xml", "json")

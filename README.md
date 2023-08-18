@@ -22,9 +22,7 @@
 - COPY_TO_IMPORT_FOLDER=1 | 0
 - OVERWRITE_XLSX=1 | 0
 
-#### Send grid mail API
-
-- SENDGRID_API_KEY=STRING
+#### Mail API
 - FROM_EMAIL=in the form EMAIL ADDRESS | NAME
 
   e.g. test@test.com|Geoff Test
