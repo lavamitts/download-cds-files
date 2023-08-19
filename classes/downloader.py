@@ -21,6 +21,7 @@ class Downloader(object):
         try:
             self.COPY_TO_IMPORT_FOLDER = int(os.getenv("COPY_TO_IMPORT_FOLDER"))
         except Exception as e:
+            print(e.args)
             self.COPY_TO_IMPORT_FOLDER = 0
         self.cds_files = []
 
@@ -103,7 +104,8 @@ class Downloader(object):
                                     copyfile(src, dest)
                             else:
                                 print("There was a problem in unzipping that archive.")
-                        except Exception as ex:
+                        except Exception as e:
+                            print(e.args)
                             print("Failed attempt to download file from", download_url, file_entry.filename)
 
         except Exception as e:
@@ -112,10 +114,7 @@ class Downloader(object):
             sys.exit()
 
     def make_folder(self, folder_name):
-        try:
-            os.mkdir(folder_name)
-        except Exception as e:
-            pass
+        os.makedirs(folder_name, exist_ok=True)
 
     def download_files_monthly(self):
         # Access data
@@ -165,7 +164,8 @@ class Downloader(object):
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except Exception as ex:
+                    except Exception as e:
+                        print(e.args)
                         print("Failed attempt to download file from", download_url, file_entry.filename)
 
     def download_files_annual(self):
@@ -217,5 +217,6 @@ class Downloader(object):
                             copyfile(src, dest)
                         else:
                             print("There was a problem in unzipping that archive.")
-                    except Exception as ex:
+                    except Exception as e:
+                        print(e.args)
                         print("Failed attempt to download file from", download_url, file_entry.filename)
