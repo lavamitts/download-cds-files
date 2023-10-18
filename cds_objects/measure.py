@@ -170,14 +170,17 @@ class Measure(Master):
             for measure_condition in measure_conditions:
                 mc = MeasureCondition(
                     measure_condition, self.measure_sid, self.additional_code)
-                mcs.append(mc)
+                if mc.operation != "D":
+                    mcs.append(mc)
 
             if len(mcs) > 0:
                 try:
                     self.mcs = sorted(
                         mcs, key=lambda x: x.condition_sequence_number, reverse=False)
                 except Exception as e:
+                    print("Measure error on measure", (self.measure_sid))
                     print(e.args)
+                    sys.exit()
             else:
                 self.mcs = []
 

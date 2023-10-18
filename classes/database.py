@@ -52,6 +52,7 @@ class Database:
                     cur.close()
                     return affected
         except psycopg2.DatabaseError as e:
+            print('Database error')
             print(e)
         finally:
             if self.conn:

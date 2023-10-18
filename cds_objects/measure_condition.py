@@ -1,4 +1,3 @@
-import csv
 from classes.master import Master
 from cds_objects.measure_condition_component import MeasureConditionComponent
 import classes.globals as g
